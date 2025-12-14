@@ -10,7 +10,7 @@ interface InventoryListProps {
 
 const InventoryList: React.FC<InventoryListProps> = ({ items, onDelete, onConsume }) => {
   const [filterCategory, setFilterCategory] = useState<Category | 'All'>('All');
-  const [sortBy, setSortBy] = useState<'expiry' | 'name'>('expiry');
+  const [sortBy] = useState<'expiry' | 'name'>('expiry');
 
   const filteredItems = useMemo(() => {
     let result = items.filter(item => !item.consumed);

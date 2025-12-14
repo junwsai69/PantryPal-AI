@@ -70,7 +70,7 @@ const Dashboard: React.FC<DashboardProps> = ({ items }) => {
     };
   }, [items]);
 
-  const StatCard = ({ label, count, colorClass, iconClass }: { label: string, count: number, colorClass: string, iconClass?: string }) => (
+  const StatCard = ({ label, count, colorClass }: { label: string, count: number, colorClass: string }) => (
     <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center min-h-[90px]">
       <div className={`text-2xl font-bold mb-1 ${colorClass}`}>
         {count}
