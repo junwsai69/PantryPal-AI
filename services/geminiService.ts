@@ -1,8 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Category } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 interface ParsedItem {
   name: string;
   category: Category;
@@ -12,6 +10,9 @@ interface ParsedItem {
 
 export const parseFoodItemsFromText = async (text: string): Promise<ParsedItem[]> => {
   try {
+    // Initialize inside the function to avoid top-level errors if env vars are missing at load time
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    
     const model = "gemini-2.5-flash";
     const prompt = `
       Extract food items from the following text: "${text}".
