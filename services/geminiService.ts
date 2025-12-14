@@ -1,15 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Category } from "../types";
 
-// NOTE: in a real production app, you might proxy this through a backend to keep the key secret.
-// For this demo, we assume the environment variable is available or the user is prompted (simulated).
-const API_KEY = process.env.API_KEY || ''; 
-
-let ai: GoogleGenAI | null = null;
-
-if (API_KEY) {
-  ai = new GoogleGenAI({ apiKey: API_KEY });
-}
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 interface ParsedItem {
   name: string;
@@ -19,11 +11,6 @@ interface ParsedItem {
 }
 
 export const parseFoodItemsFromText = async (text: string): Promise<ParsedItem[]> => {
-  if (!ai) {
-    console.warn("AI not initialized, missing API key");
-    return [];
-  }
-
   try {
     const model = "gemini-2.5-flash";
     const prompt = `

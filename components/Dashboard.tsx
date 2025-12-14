@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { FoodItem, Category } from '../types';
 import { CATEGORY_COLORS, ONE_DAY_MS } from '../constants';
 
@@ -50,6 +50,14 @@ const Dashboard: React.FC<DashboardProps> = ({ items }) => {
       value: categoryCounts[key]
     }));
 
+    const expiryData = [
+      { name: 'Expired', count: expired, color: '#ef4444' },
+      { name: '1 Day', count: in1Day, color: '#f97316' },
+      { name: '3 Days', count: in3Days, color: '#eab308' },
+      { name: '1 Wk', count: in1Week, color: '#84cc16' },
+      { name: '2 Wks', count: in2Weeks, color: '#3b82f6' },
+    ];
+
     return { 
       expired, 
       in1Day, 
@@ -57,12 +65,13 @@ const Dashboard: React.FC<DashboardProps> = ({ items }) => {
       in1Week, 
       in2Weeks,
       total: items.filter(i => !i.consumed).length, 
-      chartData 
+      chartData,
+      expiryData
     };
   }, [items]);
 
   const StatCard = ({ label, count, colorClass, iconClass }: { label: string, count: number, colorClass: string, iconClass?: string }) => (
-    <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center min-h-[100px]">
+    <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center min-h-[90px]">
       <div className={`text-2xl font-bold mb-1 ${colorClass}`}>
         {count}
       </div>
@@ -81,32 +90,12 @@ const Dashboard: React.FC<DashboardProps> = ({ items }) => {
 
       {/* Summary Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <StatCard 
-            label="Expired" 
-            count={stats.expired} 
-            colorClass="text-red-600" 
-        />
-        <StatCard 
-            label="1 Day" 
-            count={stats.in1Day} 
-            colorClass="text-red-500" 
-        />
-        <StatCard 
-            label="3 Days" 
-            count={stats.in3Days} 
-            colorClass="text-orange-500" 
-        />
-        <StatCard 
-            label="1 Week" 
-            count={stats.in1Week} 
-            colorClass="text-yellow-500" 
-        />
-        <StatCard 
-            label="2 Weeks" 
-            count={stats.in2Weeks} 
-            colorClass="text-blue-500" 
-        />
-        <div className="bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-800 flex flex-col items-center justify-center min-h-[100px]">
+        <StatCard label="Expired" count={stats.expired} colorClass="text-red-600" />
+        <StatCard label="1 Day" count={stats.in1Day} colorClass="text-orange-500" />
+        <StatCard label="3 Days" count={stats.in3Days} colorClass="text-yellow-600" />
+        <StatCard label="1 Week" count={stats.in1Week} colorClass="text-lime-600" />
+        <StatCard label="2 Weeks" count={stats.in2Weeks} colorClass="text-blue-500" />
+        <div className="bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-800 flex flex-col items-center justify-center min-h-[90px]">
            <div className="text-2xl font-bold text-white mb-1">{stats.total}</div>
            <div className="text-xs text-gray-300 text-center font-medium uppercase tracking-wide">Total Items</div>
         </div>
@@ -120,13 +109,35 @@ const Dashboard: React.FC<DashboardProps> = ({ items }) => {
                 <h4 className="text-sm font-bold text-red-800">Action Required</h4>
                 <p className="text-xs text-red-700 mt-1">
                   You have <span className="font-bold">{stats.expired}</span> expired items. 
-                  Please review and remove them from your inventory.
+                  Please review and remove them.
                 </p>
             </div>
           </div>
       )}
 
-      {/* Chart */}
+      {/* Expiry Timeline Chart */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Expiry Timeline</h3>
+        <div className="h-48 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stats.expiryData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} allowDecimals={false} />
+                <Tooltip 
+                  cursor={{ fill: 'transparent' }}
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                  {stats.expiryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Category Chart */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Inventory by Category</h3>
         <div className="h-64 w-full">
