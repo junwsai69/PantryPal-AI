@@ -1,0 +1,8 @@
+{
+  "name": "PantryPal AI",
+  "description": "A smart food inventory tracker using Gemini AI to predict expiry dates and organize your pantry. Features PWA support, local notifications, and visualized analytics.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
